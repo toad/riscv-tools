@@ -5,14 +5,15 @@ mkdir mnt
 cd mnt
 mkdir -p bin etc dev lib proc sbin sys tmp usr usr/bin \
 usr/lib usr/sbin
+cd ..
 if ! test "$RUN" == "/bin/ash"
 then
 	NAME=$(basename $RUN)
-	if test ! -f ../$RUN; then echo "./make_root.sh [filename]"; exit; fi
-	cp ../$RUN bin/$NAME
+	if test ! -f $RUN; then echo "./make_root.sh [filename]"; exit; fi
+	cp $RUN mnt/bin/$NAME
 	RUN="/bin/$NAME"
+#	RUN=/bin/ash
 fi
-cd ..
 cp busybox-1.21.1/busybox mnt/bin
 #curl -L http://riscv.org/install-guides/linux-inittab > inittab
 cat > inittab <<EOF
