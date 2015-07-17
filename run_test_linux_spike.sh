@@ -24,5 +24,22 @@ LOG=log.test
 echo | spike +disk=root.bin linux-3.14.13/vmlinux > $LOG 2>&1 &
 JOBPID=$(jobs -l | grep spike | tr --squeeze " " | cut -d " " -f 2)
 echo "Booting simulated Linux..."
-tail -n +0 --follow=name $LOG 2>/dev/null | while read x; do x=$(echo "$x" | tr -d "\r\n"); if test "$x" == "COMPLETED SPIKE LINUX TEST"; then echo Successful completion; kill $JOBPID; rm $LOG; exit 0; fi; if test "$x" == "FAILED SPIKE LINUX TEST"; then echo Failed; cat $LOG; kill $JOBPID; exit 1; fi; echo "$x"; done
+tail -n +0 --follow=name $LOG 2>/dev/null | while read x; do x=$(echo "$x" | tr -d "\r\n"); if test "$x" == "COMPLETED SPIKE LINUX TEST"; then echo Successful completion; kill $JOBPID; rm $LOG; exit 1; fi; if test "$x" == "FAILED SPIKE LINUX TEST"; then echo Failed; cat $LOG; kill $JOBPID; exit 2; fi; echo "$x"; done
+RETVAL=$?
 rm -Rf mnt-tmp run-test.sh root.bin
+kill $JOBPID > /dev/null 2>&1
+case $RETVAL in
+	1)
+		# Success
+		exit 0
+		;;
+	2)
+		# Failure
+		exit 1
+		;;
+	0)
+		# Still here.
+		echo Spike broken???
+		exit 2
+		;;
+esac
