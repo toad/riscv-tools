@@ -7,7 +7,12 @@ mkdir mnt-tmp
 mkdir mnt-tmp/bin
 if ! test -z "$2"
 then
-        if ! test -d "$2"; then echo Second argument must be a directory to merge into the root image; exit 2; fi
+        if ! test -d "$2"
+	then 
+		echo run_test_linux_spike.sh: Second argument must be a directory to merge into the root image
+		echo Second argument is $2
+		exit 2
+	fi
         cp -a "$2"/* mnt-tmp/
 fi
 BLOCKS=${3:-65536}
