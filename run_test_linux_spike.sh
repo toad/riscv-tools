@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname "$0")
 TEST=$1
 TESTNAME=$(basename "$TEST")
 rm -Rf mnt-tmp
@@ -16,11 +17,12 @@ echo "#!/bin/ash" > run-test.sh
 echo "if $TESTNAME; then echo \"COMPLETED SPIKE LINUX TEST\"; else echo \"FAILED SPIKE LINUX TEST\"; fi" >> run-test.sh
 chmod +x run-test.sh
 cp $TEST mnt-tmp/bin/$TESTNAME
+echo "Generating disk image, this could take some time..."
 ./make_root.sh run-test.sh mnt-tmp/ $BLOCKS $INODES
 set -m
 LOG=log.test
 echo | spike +disk=root.bin linux-3.14.13/vmlinux > $LOG 2>&1 &
 JOBPID=$(jobs -l | grep spike | tr --squeeze " " | cut -d " " -f 2)
-echo Job pid is $JOBPID
+echo "Booting simulated Linux..."
 tail -n +0 --follow=name $LOG 2>/dev/null | while read x; do x=$(echo "$x" | tr -d "\r\n"); if test "$x" == "COMPLETED SPIKE LINUX TEST"; then echo Successful completion; kill $JOBPID; rm $LOG; exit 0; fi; if test "$x" == "FAILED SPIKE LINUX TEST"; then echo Failed; cat $LOG; kill $JOBPID; exit 1; fi; echo "$x"; done
 rm -Rf mnt-tmp run-test.sh root.bin
