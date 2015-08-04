@@ -19,3 +19,6 @@
 [submodule "lowrisc-tag-tests"]
 	path = lowrisc-tag-tests
 	url = https://github.com/lowrisc/lowrisc-tag-tests.git
+[submodule "riscv-llvm"]
+	path = riscv-llvm
+	url = https://github.com/riscv/riscv-llvm.git
