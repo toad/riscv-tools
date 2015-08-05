@@ -26,7 +26,7 @@ echo "Generating disk image, this could take some time..."
 ./make_root.sh run-test.sh mnt-tmp/ $BLOCKS $INODES
 set -m
 LOG=log.test
-echo | spike +disk=root.bin bbl linux-3.14.13/vmlinux > $LOG 2>&1 &
+echo | spike +disk=root.bin bbl linux-3.14.49/vmlinux > $LOG 2>&1 &
 JOBPID=$(jobs -l | grep spike | tr --squeeze " " | cut -d " " -f 2)
 echo "Booting simulated Linux..."
 tail -n +0 --follow=name $LOG 2>/dev/null | while read x; do x=$(echo "$x" | tr -d "\r\n"); if test "$x" == "COMPLETED SPIKE LINUX TEST"; then echo Successful completion; kill $JOBPID; rm $LOG; exit 1; fi; if test "$x" == "FAILED SPIKE LINUX TEST"; then echo Failed; cat $LOG; kill $JOBPID; exit 2; fi; echo "$x"; done
